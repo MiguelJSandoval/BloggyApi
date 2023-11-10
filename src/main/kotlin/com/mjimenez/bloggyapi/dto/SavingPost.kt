@@ -6,7 +6,8 @@ import java.util.*
 data class SavingPost(
     val title: String,
     val author: String,
-    val content: String
+    val content: String,
+    val date: Date
 ) {
     fun isValid(): Boolean {
         return title.isNotEmpty() && author.isNotEmpty() && content.isNotEmpty()
@@ -17,7 +18,7 @@ data class SavingPost(
         post.title = title
         post.author = author
         post.content = content
-        post.date = Date()
+        post.date = date // Date()
         return post
     }
 }
