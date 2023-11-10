@@ -6,6 +6,7 @@ import com.mjimenez.bloggyapi.model.Post
 import com.mjimenez.bloggyapi.repository.IPostRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -19,12 +20,23 @@ class PostService : IPostService {
         this.repository = repository
     }
 
-    override fun getAllPosts(query: String, page: Int, rows: Int): ResponseEntity<List<Post>> {
-        val paging = PageRequest.of(page, rows)
-        if (query != "")
-            return ResponseEntity(repository.fetchAllSearching(query, query, query, paging).content, HttpStatus.OK)
+    override fun getAllPosts(query: String?, page: Int, rows: Int): ResponseEntity<List<Post>> {
+        if (query == "")
+            return ResponseEntity(listOf(), HttpStatus.OK)
 
-        return ResponseEntity(repository.findAll(paging).content, HttpStatus.OK)
+        val paging = PageRequest.of(page, rows, Sort.by(Sort.Direction.ASC, "date", "title"))
+
+        if (query == null)
+            return ResponseEntity(repository.findAll(paging).content, HttpStatus.OK)
+
+        return ResponseEntity(
+            repository.fetchAllSearching(
+                query.lowercase(),
+                query.lowercase(),
+                query.lowercase(),
+                paging
+            ).content, HttpStatus.OK
+        )
     }
 
     override fun savePost(post: SavingPost): ResponseEntity<Any> {
@@ -36,7 +48,7 @@ class PostService : IPostService {
 }
 
 interface IPostService {
-    fun getAllPosts(query: String, page: Int, rows: Int = 10): ResponseEntity<List<Post>>
+    fun getAllPosts(query: String?, page: Int, rows: Int = 10): ResponseEntity<List<Post>>
 
     fun savePost(post: SavingPost): ResponseEntity<Any>
 }

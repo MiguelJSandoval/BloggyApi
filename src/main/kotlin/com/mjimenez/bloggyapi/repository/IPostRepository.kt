@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface IPostRepository : JpaRepository<Post,String > {
-    @Query("SELECT p FROM Post p WHERE LOWER(p.title) LIKE '%:title%' OR LOWER(p.author) LIKE '%:author%' OR LOWER(p.content) LIKE '%:content%'")
+    @Query("SELECT p FROM Post p WHERE LOWER(p.title) LIKE %:title% OR LOWER(p.author) LIKE %:author% OR LOWER(p.content) LIKE %:content%")
     fun fetchAllSearching(
         @Param("title") title: String,
         @Param("author") author: String,
